@@ -34,6 +34,7 @@ from checkov.terraform.tag_providers import get_resource_tags
 from checkov.common.runners.base_runner import strtobool
 from checkov.terraform.tf_parser import TFParser
 from checkov.common.util.env_vars_config import env_vars_config
+from checkov.common.checks.default_severities import get_default_severity_for_check
 
 if TYPE_CHECKING:
     from checkov.common.typing import _SkippedCheck, LibraryGraph, LibraryGraphConnector
@@ -434,7 +435,7 @@ class Runner(BaseTerraformRunner[_TerraformDefinitions, _TerraformContext, TFDef
                         entity_tags=tags,
                         caller_file_path=caller_file_path,
                         caller_file_line_range=caller_file_line_range,
-                        severity=check.severity,
+                        severity=check.severity or get_default_severity_for_check(check),
                         bc_category=check.bc_category,
                         benchmarks=check.benchmarks,
                         details=check.details,

@@ -9,6 +9,7 @@ from checkov.common.checks_infra.registry import get_graph_checks_registry
 from checkov.common.bridgecrew.integration_features.base_integration_feature import BaseIntegrationFeature
 from checkov.common.bridgecrew.platform_integration import bc_integration
 from checkov.common.bridgecrew.severities import Severities, get_severity
+from checkov.common.checks.default_severities import get_default_severity_for_check
 from checkov.common.checks.base_check_registry import BaseCheckRegistry
 
 if TYPE_CHECKING:
@@ -31,13 +32,13 @@ class PolicyMetadataIntegration(BaseIntegrationFeature):
         self.filtered_exception_policy_ids: list[str] = []
 
     def is_valid(self) -> bool:
-        return (
-            not self.bc_integration.skip_download
-            and not self.integration_feature_failures
-        )
+        # Always return True so that pre_scan() is called and default severities can be assigned
+        # even when no API key is provided
+        return not self.bc_integration.skip_download
 
     def pre_scan(self) -> None:
         try:
+            has_metadata = False
             if self.bc_integration.customer_run_config_response:
                 self._handle_customer_run_config(self.bc_integration.customer_run_config_response)
                 if self.bc_integration.is_prisma_integration():
@@ -45,12 +46,14 @@ class PolicyMetadataIntegration(BaseIntegrationFeature):
                     self._handle_customer_prisma_policy_metadata(self.bc_integration.prisma_policies_response, exclude_policies=False)
                     # build a list of policy ids excluded using the --prisma-metadata-filter-exception flag
                     self._handle_customer_prisma_policy_metadata(self.bc_integration.prisma_policies_exception_response, exclude_policies=True)
+                has_metadata = True
             elif self.bc_integration.public_metadata_response:
                 self._handle_public_metadata(self.bc_integration.public_metadata_response)
+                has_metadata = True
             else:
                 logging.debug('In the pre-scan for policy metadata, but nothing was fetched from the platform')
+                logging.debug('Will use default severities based on check categories')
                 self.integration_feature_failures = True
-                return
 
             all_checks = BaseCheckRegistry.get_all_registered_checks()
 
@@ -74,7 +77,7 @@ class PolicyMetadataIntegration(BaseIntegrationFeature):
             for check in all_checks:
                 checkov_id = check.id
                 metadata = self.get_policy_metadata(checkov_id)
-                if metadata:
+                if metadata and has_metadata:
                     check.bc_id = metadata.get('id')
                     check.guideline = metadata.get('guideline')
 
@@ -87,6 +90,10 @@ class PolicyMetadataIntegration(BaseIntegrationFeature):
                         check.name = metadata['descriptiveTitle']
                 else:
                     check.bc_id = None
+                    # If no metadata available (no API key), assign default severity based on check category
+                    if check.severity is None:
+                        check.severity = get_default_severity_for_check(check)
+                        logging.debug(f'Assigned default severity {check.severity.name} to check {check.id} based on categories')
         except Exception:
             self.integration_feature_failures = True
             logging.debug('An error occurred loading policy metadata. Some metadata may be missing from the run.', exc_info=True)

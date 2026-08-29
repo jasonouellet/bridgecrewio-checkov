@@ -1,6 +1,60 @@
 # CHANGELOG
 
-## [Unreleased](https://github.com/bridgecrewio/checkov/compare/3.3.2...HEAD)
+## [Unreleased](https://github.com/bridgecrewio/checkov/compare/3.3.15...HEAD)
+
+## [3.3.15](https://github.com/bridgecrewio/checkov/compare/3.3.13...3.3.15) - 2026-08-27
+
+### Bug Fix
+
+- **sca:** match CVE suppressions case-insensitively - [#7659](https://github.com/bridgecrewio/checkov/pull/7659)
+- **sca:** match CvesAccounts suppressions on unprefixed account ids - [#7660](https://github.com/bridgecrewio/checkov/pull/7660)
+
+## [3.3.13](https://github.com/bridgecrewio/checkov/compare/3.3.12...3.3.13) - 2026-08-20
+
+### Bug Fix
+
+- **kubernetes:** Fix K8S suppressions annotations - [#7651](https://github.com/bridgecrewio/checkov/pull/7651)
+
+## [3.3.12](https://github.com/bridgecrewio/checkov/compare/3.3.9...3.3.12) - 2026-08-19
+
+### Bug Fix
+
+- **sca:** correct Windows path handling in image referencer - [#7650](https://github.com/bridgecrewio/checkov/pull/7650)
+
+## [3.3.9](https://github.com/bridgecrewio/checkov/compare/3.3.8...3.3.9) - 2026-08-02
+
+### Bug Fix
+
+- **terraform:** handle null container_properties in aws_batch_job_def… - [#7636](https://github.com/bridgecrewio/checkov/pull/7636)
+
+## [3.3.8](https://github.com/bridgecrewio/checkov/compare/3.3.7...3.3.8) - 2026-07-09
+
+### Bug Fix
+
+- **kubernetes:** CKV_K8S_40 should pass when hostUsers is false - [#7580](https://github.com/bridgecrewio/checkov/pull/7580)
+
+## [3.3.7](https://github.com/bridgecrewio/checkov/compare/3.3.6...3.3.7) - 2026-07-07
+
+### Feature
+
+- **general:** fix github only output for sca - [#7598](https://github.com/bridgecrewio/checkov/pull/7598)
+
+## [3.3.6](https://github.com/bridgecrewio/checkov/compare/3.3.5...3.3.6) - 2026-06-30
+
+### Bug Fix
+
+- **terraform:** prevent crash in S3AllowsAnyPrincipal with unparsed v… - [#7581](https://github.com/bridgecrewio/checkov/pull/7581)
+
+## [3.3.5](https://github.com/bridgecrewio/checkov/compare/3.3.2...3.3.5) - 2026-06-29
+
+### Feature
+
+- **general:** fix danger node version - [#7589](https://github.com/bridgecrewio/checkov/pull/7589)
+
+### Bug Fix
+
+- **general:** retry kustomize/helm install to survive transient GitHub failures - [#7591](https://github.com/bridgecrewio/checkov/pull/7591)
+- **terraform:** CKV_AZURE_190 override singular get_expected_value - [#7592](https://github.com/bridgecrewio/checkov/pull/7592)
 
 ## [3.3.2](https://github.com/bridgecrewio/checkov/compare/3.3.1...3.3.2) - 2026-06-23
 
